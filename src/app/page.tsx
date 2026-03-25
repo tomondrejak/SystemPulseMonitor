@@ -1,66 +1,74 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
+
+import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+import { EventsTable } from './components/EventsTable';
+import { DebugPanel } from './components/DebugPanel';
+
+import { useSSEStream } from '@/hooks/useSSEStream';
+import { BatchMeter } from './components/BatchMeter';
+import { EventRateChart } from './components/EventRateChart';
+import { HeartbeatChart } from './components/HeartbeatChart';
+
+import './page.scss';
+
+import { Thermometer as IconTemp } from 'lucide-react';
+import PauseStream from './components/PauseStream';
+import ConnectionStatus from './components/ConnectionStatus';
 
 export default function Home() {
+  const { metrics, isPaused, setIsPaused } = useSSEStream();
+  const { fps, memory } = usePerformanceMonitor();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main>
+      <h2>
+        Sensor_01
+        <ConnectionStatus />
+      </h2>
+
+      <section className="sectionInfo">
+        <span className="svgIcon">
+          <IconTemp size={18} />
+        </span>
+        Avg. temp: {metrics.avgTempRef.current ?? 'N/A'}°C
+      </section>
+
+      <section className="sectionCharts">
+        <div className="chartContainer">
+          <h3>Event rate</h3>
+          <EventRateChart rate={metrics.eventRateRef.current} />
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="chartContainer">
+          <h3>Heartbeat monitor</h3>
+          <HeartbeatChart queueRef={metrics.heartbeatQueueRef} />
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="sectionFilters">
+        <PauseStream isPaused={isPaused} setIsPaused={setIsPaused} />
+
+        {/* <div className="filterGroup">
+              <label >Filter events by type: </label>
+              <select name="filterEventsSelect" value={filter} onChange={(e) => setFilter(e.target.value as any)}>
+                <option value="ALL">ALL</option>
+                <option value="TEMP">TEMP</option>
+                <option value="HEARTBEAT">HEARTBEAT</option>
+                <option value="ERROR">ERROR</option>
+              </select>
+            </div> */}
+      </section>
+
+      <section className="sectionTable">
+        <EventsTable data={metrics.pulseHistoryRef.current} />
+      </section>
+
+      <section className="sectionDebug">
+        <DebugPanel fps={fps.current} memory={memory.current} />
+
+        <BatchMeter batchSize={metrics.bufferSizeRef.current} eventRate={metrics.eventRateRef.current} />
+      </section>
+    </main>
   );
 }

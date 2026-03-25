@@ -1,0 +1,28 @@
+:root {
+    --color-primary: #1cb5bd; //#02bfe7;
+    --color-secondary: #0399a1;
+
+
+    --color-bg: #fff;
+    --color-white: #fff;
+
+    --color-font-primary: #fafafa;
+    --color-font-secondary: #fafafa;
+
+
+    --color-main: #fff;
+    --color-main-shadow: #00312c;
+
+    --color-error: #ff4d4f;
+    --color-success: #52c41a;
+
+    --theme-border-radius: 5px;
+    --theme-border-color: #56d1c5;
+    --theme-gap: 1rem;
+    --theme-transition: 0.3s ease;
+
+
+    $color-primary: var(--color-primary);
+    $color-secondary: var(--color-secondary);
+
+}

@@ -1,0 +1,32 @@
+button {
+  &.btn {
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    color: var(--color-font-primary);
+    background: var(--color-secondary);
+    font-family: inherit;
+    border: none;
+    border-radius: var(--theme-border-radius);
+    cursor: pointer;
+    animation: all var(--theme-transition);
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:active {
+      transform: translateY(1px);
+      transform: scale(0.95);
+    }
+  }
+
+  &.btn--primary {
+    color: var(--color-font-primary);
+    background-color: var(--color-primary);
+  }
+
+  &.btn--secondary {
+    color: var(--color-font-secondary);
+    background-color: var(--color-secondary);
+  }
+}
