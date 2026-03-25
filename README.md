@@ -2,7 +2,12 @@
 
 System Pulse Monitor application built with Next.js, React, and Chart.js to visualize real-time sensor data and performance metrics.
 
+Screenshot: 
+https://drive.google.com/file/d/1T6Ni-kJZ-88i5oCBN8F2PpkVxGxVF5FS/view?usp=sharing
+
 ## Installation
+
+App requires Node.js v24.7.0+
 
 Install pnpm package manager [pnpm](https://pnpm.io/).
 
