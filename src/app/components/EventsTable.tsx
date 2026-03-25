@@ -1,27 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TABLE_CONTAINER_HEIGHT, TABLE_ITEM_HEIGHT } from '@/constants/constants';
 import { useVirtualizedList } from '@/hooks/useVirtualizesPulseHook';
 import { Pulse, EventTypeEnum } from '@/types/eventTypes';
 import { HeartPulse, Thermometer, TriangleAlert } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import './EventsTable.scss';
 
 export const EventsTable = ({ data }: { data: Pulse[] }) => {
   const [filter, setFilter] = useState<'ALL' | EventTypeEnum>('ALL');
 
-  // ✅ FILTER FIRST
   const filteredData = () => {
     if (filter === 'ALL') return data;
     return data.filter((d) => d.type === filter);
   };
 
-  // ✅ THEN SORT
   const sortedData = [...filteredData()].sort((a, b) => b.timestampRaw - a.timestampRaw);
 
-  // ✅ VIRTUALIZE FILTERED DATA
   const { startIndex, endIndex, offsetY, setScrollTop } = useVirtualizedList(TABLE_ITEM_HEIGHT, TABLE_CONTAINER_HEIGHT, sortedData.length);
 
   const visibleItems = sortedData.slice(startIndex, endIndex);
 
-  const eventIcon = (type: string) => {
+  const getEventIcon = (type: string) => {
     switch (type) {
       case 'HEARTBEAT':
         return (
@@ -48,30 +48,20 @@ export const EventsTable = ({ data }: { data: Pulse[] }) => {
 
   useEffect(() => {
     setScrollTop(0);
-  }, [filter, sortedData.length]);
-
-  console.log({
-    total: sortedData.length,
-    startIndex,
-    endIndex
-  });
-
-  console.log('filter:', filter, 'data types:', [...new Set(data.map((d) => d.type))]);
+  }, [filter, setScrollTop, sortedData.length]);
 
   return (
     <>
-      {/* ✅ FILTER UI */}
-      {/* <div className="filterGroup">
-        <label>Filter events by type: </label>
-        <select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
+      <div className="filterGroup">
+        <label htmlFor="filter">Filter events by type: </label>
+        <select id="filter" value={filter} onChange={(e) => setFilter(e.target.value as any)}>
           <option value="ALL">ALL</option>
           <option value="TEMP">TEMP</option>
           <option value="HEARTBEAT">HEARTBEAT</option>
           <option value="ERROR">ERROR</option>
         </select>
-      </div> */}
+      </div>
 
-      {/* ✅ EMPTY STATE */}
       {sortedData.length === 0 ? (
         <div
           style={{
@@ -108,7 +98,7 @@ export const EventsTable = ({ data }: { data: Pulse[] }) => {
                   <span>{d.id}</span>
                   <span>{d.timestamp}</span>
                   <span>
-                    {eventIcon(d.type)} {d.type}
+                    {getEventIcon(d.type)} {d.type}
                   </span>
                   <span>{d.value}</span>
                   <span>{d.deviceId}</span>

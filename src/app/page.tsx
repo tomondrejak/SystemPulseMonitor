@@ -12,26 +12,26 @@ import { HeartbeatChart } from './components/HeartbeatChart';
 
 import './page.scss';
 
-import { Thermometer as IconTemp } from 'lucide-react';
 import PauseStream from './components/PauseStream';
 import ConnectionStatus from './components/ConnectionStatus';
+import AvgTemp from './components/AvgTemp';
 
 export default function Home() {
-  const { metrics, isPaused, setIsPaused } = useSSEStream();
+  const { metrics, isConnected, isPaused, setIsPaused } = useSSEStream();
   const { fps, memory } = usePerformanceMonitor();
 
   return (
     <main>
-      <h2>
-        Sensor_01
-        <ConnectionStatus />
-      </h2>
+      <section className="sectionHeader">
+        <h2>Sensor_01</h2>
+        <div className='status'>
+          <ConnectionStatus isConnected={isConnected} />
+          <PauseStream isPaused={isPaused} setIsPaused={setIsPaused} isConnected={isConnected} />
+        </div>
+      </section>
 
       <section className="sectionInfo">
-        <span className="svgIcon">
-          <IconTemp size={18} />
-        </span>
-        Avg. temp: {metrics.avgTempRef.current ?? 'N/A'}°C
+        <AvgTemp avgTemp={metrics.avgTempRef.current} />
       </section>
 
       <section className="sectionCharts">
@@ -44,20 +44,6 @@ export default function Home() {
           <h3>Heartbeat monitor</h3>
           <HeartbeatChart queueRef={metrics.heartbeatQueueRef} />
         </div>
-      </section>
-
-      <section className="sectionFilters">
-        <PauseStream isPaused={isPaused} setIsPaused={setIsPaused} />
-
-        {/* <div className="filterGroup">
-              <label >Filter events by type: </label>
-              <select name="filterEventsSelect" value={filter} onChange={(e) => setFilter(e.target.value as any)}>
-                <option value="ALL">ALL</option>
-                <option value="TEMP">TEMP</option>
-                <option value="HEARTBEAT">HEARTBEAT</option>
-                <option value="ERROR">ERROR</option>
-              </select>
-            </div> */}
       </section>
 
       <section className="sectionTable">

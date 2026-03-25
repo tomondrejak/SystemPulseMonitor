@@ -18,6 +18,11 @@ button {
       transform: translateY(1px);
       transform: scale(0.95);
     }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
 
   &.btn--primary {

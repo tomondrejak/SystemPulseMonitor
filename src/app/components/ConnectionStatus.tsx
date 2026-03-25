@@ -1,8 +1,4 @@
-import { useSSEStream } from '@/hooks/useSSEStream';
-
-function ConnectionStatus() {
-  const { isConnected } = useSSEStream();
-
+function ConnectionStatus({ isConnected }: { isConnected: boolean }) {
   return (
     <div className="statusInfo">
       <strong>Status: </strong>

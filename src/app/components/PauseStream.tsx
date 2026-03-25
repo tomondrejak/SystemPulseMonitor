@@ -1,9 +1,10 @@
 import Button from './ui/Button';
 import { Pause, Play } from 'lucide-react';
 
-const PauseStream = ({ isPaused, setIsPaused }: { isPaused: boolean; setIsPaused: (isPaused: boolean) => void }) => {
+const PauseStream = ({ isPaused, setIsPaused, isConnected }: { isPaused: boolean; setIsPaused: (isPaused: boolean) => void; isConnected: boolean }) => {
   return (
     <Button
+      disabled={!isConnected}
       variant="secondary"
       label={
         isPaused ? (

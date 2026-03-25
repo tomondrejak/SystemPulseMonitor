@@ -1,13 +1,41 @@
-h2 {
+h3 {
+    margin-bottom: 0.5rem;
+    color: #109097;
+}
+
+section {
+    width: 100%;
+    font-size: 1rem;
+    margin-bottom: var(--theme-gap);
+
+}
+
+.sectionInfo {
+
+    .svgIcon {
+        margin: 0;
+        color: var(--color-primary)
+    }
+}
+
+.sectionHeader {
+
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
+
+    .status {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+    }
 
     .statusInfo {
         font-size: 0.8rem;
         font-weight: normal;
+        margin-right: 0.5rem;
 
         .connected {
             &::before {
@@ -35,81 +63,18 @@ h2 {
     }
 }
 
-h3 {
-    margin-bottom: 0.5rem;
-    color: #109097;
-}
-
-
-.eventRow {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-    font-size: 0.9rem;
-    padding: 0.2rem 1rem;
-    margin-bottom: 0.5rem;
-    color: #333;
-    background-color: #f4f4f4;
-    border-radius: var(--theme-border-radius);
-
-    span {
-        width: 200px;
-        margin-right: 10px;
-    }
-
-    span:nth-child(1) {
-        width: 50px;
-        text-align: left;
-    }
-
-    .svgIcon {
-        max-width: 20px;
-        margin: 0;
-        opacity: 0.8;
-    }
-
-    &--header {
-        font-weight: bold;
-        background-color: var(--color-primary);
-        color: var(--color-white);
-    }
-
-    &--error {
-        border-color: var(--color-error);
-        color: var(--color-white);
-        background-color: var(--color-error);
-        opacity: 0.7;
-
-    }
-}
-
-section {
-    width: 100%;
-    font-size: 1rem;
-    margin-bottom: var(--theme-gap);
-
-
-    &.sectionInfo {
-
-        .svgIcon {
-            margin: 0;
-            color: var(--color-primary)
-        }
-    }
-
-
-    &.sectionTable {}
-
-    &.sectionFilters {
+.sectionTable {
+    .filterGroup {
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         font-size: 0.8rem;
+        padding: 0.5rem 0;
 
         select {
             padding: 0.3rem 0.6rem;
+            margin-left: 0.5rem;
             color: inherit;
             background-color: var(--color-white);
             font-family: inherit;
@@ -117,51 +82,51 @@ section {
             border-radius: var(--theme-border-radius);
         }
     }
+}
 
+.sectionDebug {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--theme-gap);
+    font-size: 0.8rem;
+}
 
-    &.sectionDebug {
+.sectionCharts {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: var(--theme-gap);
+
+    .chartContainer {
+        flex: 1;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-between;
-        padding: 0 var(--theme-gap);
-        font-size: 0.8rem;
-    }
+        justify-content: flex-start;
 
-    &.sectionCharts {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-evenly;
-        gap: var(--theme-gap);
+        .chartWrapper {
+            width: 100%;
+            height: 200px;
+            max-height: 200px;
+            padding: var(--theme-gap);
+            border-radius: var(--theme-border-radius);
+            border: 1px solid var(--theme-border-color);
 
-        .chartContainer {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-
-            .chartWrapper {
-                width: 100%;
+            canvas {
+                width: 100% !important;
                 height: 200px;
                 max-height: 200px;
-                padding: var(--theme-gap);
-                border-radius: var(--theme-border-radius);
-                border: 1px solid var(--theme-border-color);
-
-                canvas {
-                    width: 100% !important;
-                    height: 200px;
-                    max-height: 200px;
-                    border: none;
-                }
-
+                border: none;
             }
 
         }
+
     }
 }
+
 
 canvas {
     border: 1px solid var(--color-primary);
