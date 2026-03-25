@@ -7,7 +7,7 @@ import SiteHeader from './components/ui/SiteHeader';
 import '@/styles/styles.scss';
 
 export const metadata: Metadata = {
-  title: 'System Pulse Monitor',
+  title: 'System Pulse Monitor Demo',
   description: 'System Pulse Monitor application built with Next.js, React, and Chart.js to visualize real-time sensor data and performance metrics.'
 };
 
