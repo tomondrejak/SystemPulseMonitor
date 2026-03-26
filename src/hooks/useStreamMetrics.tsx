@@ -1,66 +1,80 @@
 import { useEffect, useRef } from 'react';
 import { Pulse } from '../types/eventTypes';
-import { BUFFER_MAX_ITEMS } from '@/constants/constants';
+import { BUFFER_MAX_ITEMS, LAST_TEMP_N_ITEMS } from '@/constants/constants';
 
 export const useStreamMetrics = () => {
-  // All metrics stored in refs (no re-renders)
-  const avgTempRef = useRef<string | null>(null);
+  // Metric refs
+  const avgTempRef = useRef<number | null>(null);
   const bufferSizeRef = useRef(0);
   const eventRateRef = useRef(0);
 
+  // Data storage refs
   const pulseHistoryRef = useRef<Pulse[]>([]);
-  const heartbeatHistoryRef = useRef<Pulse[]>([]);
   const heartbeatQueueRef = useRef<Pulse[]>([]);
+
+  // Temperature rolling average state
+  const tempDataRef = useRef<{
+    temps: number[];
+    sum: number;
+  }>({
+    temps: [],
+    sum: 0
+  });
+
+  // De-duplication set for incoming events based on timestamp
   const timestampSetRef = useRef<Set<number>>(new Set());
 
+  // Event rate calculation every second
   const eventCounterRef = useRef<number>(0);
-
-  const tempSumRef = useRef(0);
-  const tempCountRef = useRef(0);
 
   const addIncomingEventsData = (pulses: Pulse[]) => {
     eventCounterRef.current += pulses.length;
 
     pulses.forEach((p) => {
+      // De-duplication based on timestamp
       if (timestampSetRef.current.has(p.timestampRaw)) return;
-
       timestampSetRef.current.add(p.timestampRaw);
+
+      // Global pulse history for table
       pulseHistoryRef.current.push(p);
 
-      // Add heartbeats to separate history + queue for chart
+      // Heartbeat queue for chart
       if (p.type === 'HEARTBEAT') {
-        heartbeatHistoryRef.current.push(p);
         heartbeatQueueRef.current.push(p);
       }
 
-      // Data for avg temp calculation
+      // Temperature processing for rolling average
       if (p.type === 'TEMP') {
-        tempSumRef.current += p.value;
-        tempCountRef.current++;
+        const tempState = tempDataRef.current;
+
+        tempState.temps.push(p.value);
+        tempState.sum += p.value;
+
+        // Keep only last N
+        if (tempState.temps.length > LAST_TEMP_N_ITEMS) {
+          const removed = tempState.temps.shift()!;
+          tempState.sum -= removed;
+        }
+
+        // Compute avg. temp
+        avgTempRef.current = Number((tempState.sum / tempState.temps.length).toFixed(2));
       }
     });
 
-    // Heartbeat history buffer
-    if (heartbeatHistoryRef.current.length > BUFFER_MAX_ITEMS) {
-      const removed = heartbeatHistoryRef.current.splice(0, heartbeatHistoryRef.current.length - BUFFER_MAX_ITEMS);
-      removed.forEach((i) => timestampSetRef.current.delete(i.timestampRaw));
-    }
+    // Memory management: trim history and heartbeat queues to max buffer size
 
-    // Pulse history buffer
     if (pulseHistoryRef.current.length > BUFFER_MAX_ITEMS) {
       pulseHistoryRef.current.splice(0, pulseHistoryRef.current.length - BUFFER_MAX_ITEMS);
     }
 
-    // Calculate avg temp (no re-render)
-    if (tempCountRef.current > 0) {
-      const avg = tempSumRef.current / tempCountRef.current;
-      avgTempRef.current = avg.toFixed(2);
+    if (heartbeatQueueRef.current.length > BUFFER_MAX_ITEMS) {
+      heartbeatQueueRef.current.splice(0, heartbeatQueueRef.current.length - BUFFER_MAX_ITEMS);
     }
 
     bufferSizeRef.current = pulseHistoryRef.current.length;
   };
 
-  // Event rate calculation (no re-render)
+  // Event rate calculation every second
   useEffect(() => {
     const rateTimer = setInterval(() => {
       eventRateRef.current = eventCounterRef.current;
@@ -70,17 +84,12 @@ export const useStreamMetrics = () => {
     return () => clearInterval(rateTimer);
   }, []);
 
-  console.log('=== METRICS COMPUTED ===');
-
   return {
     avgTempRef,
     bufferSizeRef,
     eventRateRef,
-
-    heartbeatHistoryRef,
-    heartbeatQueueRef,
     pulseHistoryRef,
-
+    heartbeatQueueRef,
     addIncomingEventsData
   };
 };

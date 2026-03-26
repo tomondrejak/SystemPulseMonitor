@@ -58,7 +58,7 @@ export const EventRateChart = ({ rate }: { rate: number }) => {
       datasets: [
         {
           label: 'Events/sec',
- 		      borderColor: '#1cb5bd',
+          borderColor: '#1cb5bd',
           backgroundColor: 'rgba(0, 224, 255, 0.1)',
           fill: true,
           data: [],

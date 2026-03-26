@@ -6,6 +6,8 @@ export const SERVER_RECONNECT_INTERVAL = 2000; // ms
 export const BUFFER_UPDATE_INTERVAL =  500; // ms
 export const BUFFER_MAX_ITEMS = 200;
 
+export const LAST_TEMP_N_ITEMS = 20;
+
 export const TABLE_ITEM_HEIGHT = 32;
 export const TABLE_CONTAINER_HEIGHT = 320;
 
