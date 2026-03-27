@@ -4,7 +4,7 @@ export const SERVER_STREAM_FREQUENCY = 100; // ms between server events
 export const SERVER_RECONNECT_INTERVAL = 2000; // ms
 
 export const BUFFER_UPDATE_INTERVAL =  500; // ms
-export const BUFFER_MAX_ITEMS = 200;
+export const BUFFER_MAX_ITEMS = 100;
 
 export const LAST_TEMP_N_ITEMS = 20;
 

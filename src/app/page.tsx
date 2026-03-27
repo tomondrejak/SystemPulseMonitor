@@ -37,12 +37,12 @@ export default function Home() {
       <section className="sectionCharts">
         <div className="chartContainer">
           <h3>Event rate</h3>
-          <EventRateChart rate={metrics.eventRateRef.current} />
+          <EventRateChart rate={metrics.eventRateRef.current} isConnected={isConnected} isPaused={isPaused} />
         </div>
 
         <div className="chartContainer">
           <h3>Heartbeat monitor</h3>
-          <HeartbeatChart queueRef={metrics.heartbeatQueueRef} />
+          <HeartbeatChart queueRef={metrics.heartbeatQueueRef} isConnected={isConnected} isPaused={isPaused} />
         </div>
       </section>
 

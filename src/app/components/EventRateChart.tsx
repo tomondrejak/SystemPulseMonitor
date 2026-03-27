@@ -7,11 +7,18 @@ import { Chart as ChartJS, LinearScale, PointElement, LineElement, Tooltip, Fill
 import StreamingPlugin from 'chartjs-plugin-streaming';
 import 'chartjs-adapter-luxon';
 
-// Register the streaming plugin. This enables the 'realtime' scale type.
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Filler, TimeScale, StreamingPlugin);
 
-export const EventRateChart = ({ rate }: { rate: number }) => {
+interface EventRateChartProps {
+  rate: number;
+  isConnected: boolean;
+  isPaused: boolean;
+}
+
+export const EventRateChart = ({ rate, isConnected, isPaused }: EventRateChartProps) => {
   const rateRef = useRef(rate);
+
+  const shouldPause = !isConnected || isPaused;
 
   useEffect(() => {
     rateRef.current = rate;
@@ -24,12 +31,15 @@ export const EventRateChart = ({ rate }: { rate: number }) => {
       animation: false as const,
       scales: {
         x: {
-          type: 'realtime' as const, // Now recognized thanks to the plugin
+          type: 'realtime' as const,
           realtime: {
             duration: 20000,
             refresh: 1000,
             delay: 2000,
+            pause: shouldPause,
             onRefresh: (chart: any) => {
+              if (shouldPause) return; 
+
               chart.data.datasets[0].data.push({
                 x: Date.now(),
                 y: rateRef.current
@@ -39,7 +49,7 @@ export const EventRateChart = ({ rate }: { rate: number }) => {
         },
         y: {
           beginAtZero: true,
-          suggestedMax: 100 // Stays low until spikes exceed 100
+          suggestedMax: 100
         }
       },
       plugins: {
@@ -50,7 +60,7 @@ export const EventRateChart = ({ rate }: { rate: number }) => {
         }
       }
     }),
-    []
+    [shouldPause] // ✅ important dependency
   );
 
   const data = useMemo(
@@ -73,7 +83,7 @@ export const EventRateChart = ({ rate }: { rate: number }) => {
 
   return (
     <div className="chartWrapper">
-      <Line data={data} options={options} redraw={false} />
+      <Line data={data} options={options} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pulse } from '../types/eventTypes';
-import { pulseAdapter } from '../adapter/pulseAdapter';
+import { pulseAdapter } from '../adapters/pulseAdapter';
 import { useStreamMetrics } from './useStreamMetrics';
 import { BUFFER_UPDATE_INTERVAL, SERVER_RECONNECT_INTERVAL, SERVER_STREAM_URL } from '@/constants/constants';
 

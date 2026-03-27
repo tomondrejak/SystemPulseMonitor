@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Scatter } from 'react-chartjs-2';
 import { Chart as ChartJS, LinearScale, PointElement, Tooltip } from 'chart.js';
 import 'chartjs-adapter-luxon';
@@ -11,10 +11,15 @@ ChartJS.register(ChartStreaming, LinearScale, PointElement, Tooltip);
 
 interface HeartbeatChartProps {
   queueRef: React.RefObject<Pulse[]>;
+  isConnected: boolean;
+  isPaused: boolean;
 }
 
-export const HeartbeatChart = ({ queueRef }: HeartbeatChartProps) => {
-  const chartRef = useRef<any>(null);
+export const HeartbeatChart = ({ queueRef, isConnected, isPaused }: HeartbeatChartProps) => {
+  const [isMouseOver, setIsMouseOver] = useState(false);
+
+  const shouldPauseChart = !isConnected || isPaused || isMouseOver;
+  const shouldStop = !isConnected || isPaused;
 
   const options = useMemo(
     () => ({
@@ -30,10 +35,10 @@ export const HeartbeatChart = ({ queueRef }: HeartbeatChartProps) => {
             delay: 800,
             ttl: 600000,
             frameRate: 60,
-            onRefresh: (chart: any) => {
-              const realtime = chart.options.scales.x.realtime;
+            pause: shouldPauseChart,
 
-              if (realtime.pause) return; // 👈 skip processing
+            onRefresh: (chart: any) => {
+              if (shouldStop) return;
 
               const queue = queueRef.current || [];
               const dataset = chart.data.datasets[0].data;
@@ -52,7 +57,7 @@ export const HeartbeatChart = ({ queueRef }: HeartbeatChartProps) => {
             unit: 'second' as const,
             displayFormats: { second: 'HH:mm:ss' }
           },
-          grid: { color: 'rgba(255,255,255,0.05)' },
+          grid: { color: 'rgba(255,255,0.05)' },
           ticks: { color: '#666' }
         },
         y: {
@@ -75,7 +80,7 @@ export const HeartbeatChart = ({ queueRef }: HeartbeatChartProps) => {
         }
       }
     }),
-    [queueRef]
+    [queueRef, shouldPauseChart, shouldStop]
   );
 
   const data = useMemo(
@@ -88,33 +93,16 @@ export const HeartbeatChart = ({ queueRef }: HeartbeatChartProps) => {
           radius: 3,
           borderColor: 'transparent',
           showLine: false,
-          backgroundColor: (ctx: any) => {
-            return getChartItemColor(ctx.raw?.y || 0);
-          }
+          backgroundColor: (ctx: any) => getChartItemColor(ctx.raw?.y || 0)
         }
       ]
     }),
     []
   );
 
-  const handlePause = (paused: boolean) => {
-    const chart = chartRef.current?.chart || chartRef.current;
-
-    if (!chart) return;
-
-    // Access realtime scale
-    const realtime = chart.options.scales.x.realtime;
-
-    if (!realtime) return;
-
-    realtime.pause = paused;
-
-    chart.update('none');
-  };
-
   return (
-    <div className="chartWrapper" style={{ width: '100%', height: '220px' }} onMouseEnter={() => handlePause(true)} onMouseLeave={() => handlePause(false)}>
-      <Scatter ref={chartRef} data={data} options={options} />
+    <div className="chartWrapper" onMouseEnter={() => setIsMouseOver(true)} onMouseLeave={() => setIsMouseOver(false)}>
+      <Scatter data={data} options={options} />
     </div>
   );
 };
